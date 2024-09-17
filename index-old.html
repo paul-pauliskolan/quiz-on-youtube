@@ -53,6 +53,8 @@
         let player;
         let quizVisible = false;
         let currentQuestion = 0;
+        let playerElement = document.getElementById('player');  // Select the player element
+
 
         // Define quiz questions and the times they should appear (in seconds)
         let questions = [
@@ -96,11 +98,11 @@
 
         function showQuiz(question) {
             quizVisible = true;
-            player.pauseVideo();  // Pause the video when showing the quiz
+            player.pauseVideo();  // Pause the video
+            playerElement.setAttribute('inert', '');  // Make the player non-interactive
             document.getElementById('quiz-overlay').style.display = 'flex';
             document.getElementById('quiz-question').innerText = question.question;
         }
-
         function submitAnswer(answer) {
             let correctAnswer = questions[currentQuestion].correct;
             if (answer === correctAnswer) {
@@ -110,13 +112,14 @@
             }
             hideQuiz();
         }
-
         function hideQuiz() {
             document.getElementById('quiz-overlay').style.display = 'none';
             quizVisible = false;
+            playerElement.removeAttribute('inert');  // Restore player interactivity
+            player.playVideo();  // Resume the video
             currentQuestion++;
-            player.playVideo();  // Resume the video after quiz
             checkQuizTime();
+        }
         }
     </script>
 </body>
