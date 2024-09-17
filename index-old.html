@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Quiz</title>
     <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #player-container {
+            position: relative;
+        }
+
         #quiz-overlay {
             position: absolute;
             top: 0;
@@ -17,6 +26,7 @@
             align-items: center;
             background: rgba(0, 0, 0, 0.5);
             color: white;
+            z-index: 1;
         }
 
         .question {
@@ -24,29 +34,48 @@
             color: black;
             padding: 20px;
             border-radius: 10px;
+            text-align: center;
         }
 
-        #player {
-            position: relative;
-            z-index: 0;
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        #quiz-overlay {
-            z-index: 1;
+        #play-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #007bff;
+            color: white;
+        }
+
+        #pause-button {
+            position: absolute;
+            bottom: 10px;
+            left: 100px;
+            background: #dc3545;
+            color: white;
         }
     </style>
 </head>
 
 <body>
-    <h1>Quiz test 2</h1>
-    <div id="player"></div>
-    <div id="quiz-overlay">
-        <div class="question">
-            <p id="quiz-question">Question text here</p>
-            <button onclick="submitAnswer('a')">Answer A</button>
-            <button onclick="submitAnswer('b')">Answer B</button>
-            <button onclick="submitAnswer('c')">Answer C</button>
+    <div id="player-container">
+        <div id="player"></div>
+        <div id="quiz-overlay">
+            <div class="question">
+                <p id="quiz-question">Question text here</p>
+                <button onclick="submitAnswer('a')">Answer A</button>
+                <button onclick="submitAnswer('b')">Answer B</button>
+                <button onclick="submitAnswer('c')">Answer C</button>
+            </div>
         </div>
+        <button id="play-button" onclick="playVideo()">Play Video</button>
+        <button id="pause-button" onclick="pauseVideo()">Pause Video</button>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -54,13 +83,11 @@
         let player;
         let quizVisible = false;
         let currentQuestion = 0;
-        let playerElement = document.getElementById('player');  // Select the player element
-
 
         // Define quiz questions and the times they should appear (in seconds)
         let questions = [
-            { time: 5, question: "What is 2 + 2?", answers: ['a', 'b', 'c'], correct: 'a' },
-            { time: 10, question: "What is 3 + 3?", answers: ['a', 'b', 'c'], correct: 'b' }
+            { time: 5, question: "What is 2 + 2?", correct: 'a' },
+            { time: 10, question: "What is the capital of France?", correct: 'b' }
         ];
 
         // Load the YouTube API player
@@ -68,7 +95,11 @@
             player = new YT.Player('player', {
                 height: '360',
                 width: '640',
-                videoId: 'xj__ky29TRo?si=q2z_xG-bImrjTxG8',  // Replace with your actual video ID
+                videoId: 'xj__ky29TRo',  // Your video ID
+                playerVars: {
+                    controls: 0,  // Disable YouTube's controls
+                    modestbranding: 1
+                },
                 events: {
                     'onReady': onPlayerReady,
                     'onStateChange': onPlayerStateChange
@@ -77,7 +108,7 @@
         }
 
         function onPlayerReady(event) {
-            event.target.playVideo();
+            // Video is ready to play
         }
 
         function onPlayerStateChange(event) {
@@ -99,11 +130,14 @@
 
         function showQuiz(question) {
             quizVisible = true;
-            player.pauseVideo();  // Pause the video
-            playerElement.setAttribute('inert', '');  // Make the player non-interactive
+            player.pauseVideo();  // Pause the video when showing the quiz
             document.getElementById('quiz-overlay').style.display = 'flex';
             document.getElementById('quiz-question').innerText = question.question;
+
+            // Focus on the first button to avoid focus issues
+            document.querySelector('#quiz-overlay button').focus();
         }
+
         function submitAnswer(answer) {
             let correctAnswer = questions[currentQuestion].correct;
             if (answer === correctAnswer) {
@@ -113,15 +147,22 @@
             }
             hideQuiz();
         }
+
         function hideQuiz() {
             document.getElementById('quiz-overlay').style.display = 'none';
             quizVisible = false;
-            playerElement.removeAttribute('inert');  // Restore player interactivity
-            player.playVideo();  // Resume the video
             currentQuestion++;
+            player.playVideo();  // Resume the video after the quiz
             checkQuizTime();
         }
 
+        function playVideo() {
+            player.playVideo();
+        }
+
+        function pauseVideo() {
+            player.pauseVideo();
+        }
     </script>
 </body>
 
