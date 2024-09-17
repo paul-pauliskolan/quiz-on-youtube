@@ -44,28 +44,11 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
-        #play-button {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: #007bff;
-            color: white;
-        }
-
-        #pause-button {
-            position: absolute;
-            bottom: 10px;
-            left: 100px;
-            background: #dc3545;
-            color: white;
-        }
     </style>
 </head>
 
 <body>
     <div id="player-container">
-        <h1>Disable YouTube Controls</h1>
         <div id="player"></div>
         <div id="quiz-overlay">
             <div class="question">
@@ -75,8 +58,6 @@
                 <button onclick="submitAnswer('c')">Answer C</button>
             </div>
         </div>
-        <button id="play-button" onclick="playVideo()">Play Video</button>
-        <button id="pause-button" onclick="pauseVideo()">Pause Video</button>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -135,7 +116,7 @@
             document.getElementById('quiz-overlay').style.display = 'flex';
             document.getElementById('quiz-question').innerText = question.question;
 
-            // Focus on the first button to avoid focus issues
+            // Focus on the first button to ensure it receives focus
             document.querySelector('#quiz-overlay button').focus();
         }
 
@@ -155,14 +136,6 @@
             currentQuestion++;
             player.playVideo();  // Resume the video after the quiz
             checkQuizTime();
-        }
-
-        function playVideo() {
-            player.playVideo();
-        }
-
-        function pauseVideo() {
-            player.pauseVideo();
         }
     </script>
 </body>
