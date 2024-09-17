@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Quiz</title>
+    <style>
+        #quiz-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        .question {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="player"></div>
+    <div id="quiz-overlay">
+        <div class="question">
+            <p id="quiz-question">Question text here</p>
+            <button onclick="submitAnswer('a')">Answer A</button>
+            <button onclick="submitAnswer('b')">Answer B</button>
+            <button onclick="submitAnswer('c')">Answer C</button>
+        </div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let player;
+        let questions = [
+            { time: 5, question: "What is 2 + 2?", answers: ['a', 'b', 'c'], correct: 'a' },
+            { time: 10, question: "What is 3 + 3?", answers: ['a', 'b', 'c'], correct: 'b' }
+        ];
+        let currentQuestion = 0;
+        let quizVisible = false;
+
+        // Load YouTube Player API
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '360',
+                width: '640',
+                videoId: 'YOUR_VIDEO_ID',
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                checkQuizTime();
+            }
+        }
+
+        function checkQuizTime() {
+            if (player && !quizVisible) {
+                let currentTime = Math.floor(player.getCurrentTime());
+                if (currentQuestion < questions.length && currentTime >= questions[currentQuestion].time) {
+                    showQuiz(questions[currentQuestion]);
+                }
+                requestAnimationFrame(checkQuizTime);
+            }
+        }
+
+        function showQuiz(question) {
+            quizVisible = true;
+            document.getElementById('quiz-overlay').style.display = 'flex';
+            document.getElementById('quiz-question').innerText = question.question;
+        }
+
+        function submitAnswer(answer) {
+            let correctAnswer = questions[currentQuestion].correct;
+            if (answer === correctAnswer) {
+                alert("Correct!");
+            } else {
+                alert("Wrong answer!");
+            }
+            hideQuiz();
+        }
+
+        function hideQuiz() {
+            document.getElementById('quiz-overlay').style.display = 'none';
+            quizVisible = false;
+            currentQuestion++;
+            player.playVideo();  // Resume video
+        }
+    </script>
+</body>
+
+</html>
