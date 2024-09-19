@@ -85,53 +85,43 @@
 
 <body>
     <div id="player-container">
-        <h1>Disable YouTube Controls</h1>
+        <h1>Webbens historia</h1>
         <div id="player"></div>
         <div id="quiz-overlay">
             <div class="question">
                 <p id="quiz-question">Question text here</p>
-                <div id="quiz-options"></div>
+                <button onclick="submitAnswer('a')">Answer A</button>
+                <button onclick="submitAnswer('b')">Answer B</button>
+                <button onclick="submitAnswer('c')">Answer C</button>
             </div>
         </div>
+        <!--   <button id="play-button" onclick="playVideo()">Play Video</button>
+        <button id="pause-button" onclick="pauseVideo()">Pause Video</button> -->
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let player;
+        let quizVisible = false;
         let currentQuestion = 0;
 
         // Define quiz questions and the times they should appear (in seconds)
-        const questions = [
-            {
-                time: 2,
-                question: "What is 2 + 2?",
-                options: [
-                    { text: "4", value: 'a' },
-                    { text: "3", value: 'b' },
-                    { text: "5", value: 'c' }
-                ],
-                correct: 'a'
-            },
-            {
-                time: 4,
-                question: "What is the capital of France?",
-                options: [
-                    { text: "Berlin", value: 'a' },
-                    { text: "Paris", value: 'b' },
-                    { text: "Madrid", value: 'c' }
-                ],
-                correct: 'b'
-            }
+        let questions = [
+            { time: 3, question: "What is the capital of France?", correct: 'b' },
+            { time: 133, question: "I vilken ordning kom dessa webbläsare ", correct: 'a' },
+
         ];
+
+
 
         // Load the YouTube API player
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '100%', // Set height to 100%
-                width: '100%',  // Set width to 100%
+                height: '100%',
+                width: '100%',
                 videoId: 'xj__ky29TRo',  // Your video ID
                 playerVars: {
-                    controls: 0,  // YouTube's controls
+                    controls: 0,  //  YouTube's controls
                     modestbranding: 1,
                     rel: 0,
                     autoplay: 0
@@ -144,57 +134,61 @@
         }
 
         function onPlayerReady(event) {
-            // Optionally, you can do something when the player is ready
+            // Video is ready to play
         }
 
         function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
+            if (event.data == YT.PlayerState.PLAYING && !quizVisible) {
                 checkQuizTime();
             }
         }
 
         function checkQuizTime() {
-            const currentTime = player.getCurrentTime();
-            const question = questions[currentQuestion];
-
-            if (question && currentTime >= question.time) {
-                showQuiz(currentQuestion);
-                player.pauseVideo();
-            } else {
-                setTimeout(checkQuizTime, 1000); // Check every second
+            if (player && !quizVisible) {
+                let currentTime = Math.floor(player.getCurrentTime());
+                if (currentQuestion < questions.length && currentTime >= questions[currentQuestion].time) {
+                    showQuiz(questions[currentQuestion]);
+                } else {
+                    requestAnimationFrame(checkQuizTime);
+                }
             }
         }
 
-        function showQuiz(questionIndex) {
-            const quizOverlay = document.getElementById('quiz-overlay');
-            const quizQuestion = document.getElementById('quiz-question');
-            const quizOptions = document.getElementById('quiz-options');
+        function showQuiz(question) {
+            quizVisible = true;
+            player.pauseVideo();  // Pause the video when showing the quiz
+            document.getElementById('quiz-overlay').style.display = 'flex';
+            document.getElementById('quiz-question').innerText = question.question;
 
-            const question = questions[questionIndex];
-            quizQuestion.textContent = question.question;
-            quizOptions.innerHTML = '';
-
-            question.options.forEach(option => {
-                const button = document.createElement('button');
-                button.textContent = option.text;
-                button.onclick = () => submitAnswer(option.value);
-                quizOptions.appendChild(button);
-            });
-
-            quizOverlay.style.display = 'flex';
+            // Focus on the first button to avoid focus issues
+            document.querySelector('#quiz-overlay button').focus();
         }
 
         function submitAnswer(answer) {
-            const question = questions[currentQuestion];
-            if (answer === question.correct) {
-                alert('Correct!');
+            let correctAnswer = questions[currentQuestion].correct;
+            if (answer === correctAnswer) {
+                alert("Correct!");
             } else {
-                alert('Incorrect!');
+                alert("Wrong answer!");
             }
-            document.getElementById('quiz-overlay').style.display = 'none';
-            currentQuestion++;
-            player.playVideo();
+            hideQuiz();
         }
+
+        function hideQuiz() {
+            document.getElementById('quiz-overlay').style.display = 'none';
+            quizVisible = false;
+            currentQuestion++;
+            player.playVideo();  // Resume the video after the quiz
+            checkQuizTime();
+        }
+        /*
+                function playVideo() {
+                    player.playVideo();
+                }
+        
+                function pauseVideo() {
+                    player.pauseVideo();
+                } */
     </script>
 </body>
 
