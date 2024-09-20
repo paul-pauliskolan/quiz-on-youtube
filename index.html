@@ -12,18 +12,13 @@
         }
 
         #player-container {
-            /*       position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;*/
+
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
             padding-bottom: 56.25%;
             /* 16:9 aspect ratio */
-            /*     height: 0; */
-
             overflow: hidden;
         }
 
@@ -64,28 +59,12 @@
             width: 90%;
             height: 70%;
         }
-
-        /*    #play-button {
-            position: absolute;
-            bottom: 10px;
-            left: 110px;
-            background: #007bff;
-            color: white;
-        }
-
-        #pause-button {
-            position: absolute;
-            bottom: 10px;
-            left: 220px;
-            background: #dc3545;
-            color: white;
-        } */
     </style>
 </head>
 
 <body>
     <div id="player-container">
-        <h1>Disable YouTube Controls</h1>
+        <h1>Webbens historia</h1>
         <div id="player"></div>
         <div id="quiz-overlay">
             <div class="question">
@@ -103,26 +82,92 @@
         // Define quiz questions and the times they should appear (in seconds)
         const questions = [
             {
-                time: 2,
-                question: "What is 2 + 2?",
+                time: convertToSeconds("0:14"),
+                question: "Vem skapade den första webbsidan?",
                 options: [
-                    { text: "4", value: 'a' },
-                    { text: "3", value: 'b' },
-                    { text: "5", value: 'c' }
+                    { text: "Bill Gates", value: 'a' },
+                    { text: "Tim Berners-Lee", value: 'b' },
+                    { text: "Steve Jobs", value: 'c' }
+                ],
+                correct: 'b'
+            },
+
+            {
+                time: convertToSeconds("1:18"),
+                question: "Vilken webbläsare konkurrerades ut av Netscape?",
+                options: [
+                    { text: "Mosaic", value: 'a' },
+                    { text: "Firefox", value: 'b' },
+                    { text: "Internet Explorer", value: 'c' }
                 ],
                 correct: 'a'
             },
             {
-                time: 4,
-                question: "What is the capital of France?",
+                time: convertToSeconds("2:13"),
+                question: "Vad var en tidig användning av Java-applets på webbsidor?",
                 options: [
-                    { text: "Berlin", value: 'a' },
-                    { text: "Paris", value: 'b' },
-                    { text: "Madrid", value: 'c' }
+                    { text: "Skapa bilder", value: 'a' },
+                    { text: "Spela musik", value: 'b' },
+                    { text: "Integrera små program", value: 'c' }
+                ],
+                correct: 'c'
+            },
+            {
+                time: convertToSeconds("3:47"),
+                question: "Vilket system införde strikta regler för HTML-kod?",
+                options: [
+                    { text: "XHTML", value: 'a' },
+                    { text: "CSS", value: 'b' },
+                    { text: "HTML 5", value: 'c' }
+                ],
+                correct: 'a'
+            },
+            {
+                time: convertToSeconds("7:17"),
+                question: "Vad är skillnaden mellan internet och webben?",
+                options: [
+                    { text: "Webben är en tjänst på internet", value: 'a' },
+                    { text: "Internet är en tjänst på webben", value: 'b' },
+                    { text: "De är samma sak", value: 'c' }
+                ],
+                correct: 'a'
+            },
+
+            {
+                time: convertToSeconds("8:48"),
+                question: "Vilket land har använt digitala val på riksnivå?",
+                options: [
+                    { text: "Sverige", value: 'a' },
+                    { text: "Estland", value: 'b' },
+                    { text: "USA", value: 'c' }
                 ],
                 correct: 'b'
-            }
+            },
+            {
+                time: convertToSeconds("8:49"),
+                question: "Vad är en stor risk med att ha digitala val enligt texten?",
+                options: [
+                    { text: "Det tar för lång tid att rösta", value: 'a' },
+                    { text: "Det kan manipuleras lättare", value: 'b' },
+                    { text: "Färre personer röstar", value: 'c' }
+                ],
+                correct: 'b'
+            }, {
+                time: convertToSeconds("11:00"),
+                question: "Vilken positiv förändring nämns om hur man kan beställa varor idag jämfört med tidigare?",
+                options: [
+                    { text: "Det går snabbare och enklare", value: 'a' },
+                    { text: "Det är mer personligt", value: 'b' },
+                    { text: "Det är billigare", value: 'c' }
+                ],
+                correct: 'a'
+            },
         ];
+
+        function convertToSeconds(timeStr) {
+            const [minutes, seconds] = timeStr.split(':').map(Number);
+            return minutes * 60 + seconds;
+        }
 
         // Load the YouTube API player
         function onYouTubeIframeAPIReady() {
@@ -131,7 +176,7 @@
                 width: '100%',  // Set width to 100%
                 videoId: 'xj__ky29TRo',  // Your video ID
                 playerVars: {
-                    controls: 0,  // YouTube's controls
+                    controls: 1,  // YouTube's controls
                     modestbranding: 1,
                     rel: 0,
                     autoplay: 0
@@ -156,6 +201,8 @@
         function checkQuizTime() {
             const currentTime = player.getCurrentTime();
             const question = questions[currentQuestion];
+
+
 
             if (question && currentTime >= question.time) {
                 showQuiz(currentQuestion);
